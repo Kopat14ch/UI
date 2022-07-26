@@ -19,12 +19,12 @@ public class HealthBar : MonoBehaviour
 
     private void OnEnable()
     {
-        _player.HealthChange += OnHealthChanged;
+        _player.HealthChanged += OnHealthChanged;
     }
 
     private void OnDisable()
     {
-        _player.HealthChange -= OnHealthChanged;
+        _player.HealthChanged -= OnHealthChanged;
     }
 
     private void OnHealthChanged(int currentHealth)
@@ -32,12 +32,10 @@ public class HealthBar : MonoBehaviour
         if (_changeHealthWork != null)
         {
             StopCoroutine(_changeHealthWork);
-            _changeHealthWork = StartCoroutine(ChangeHealth(currentHealth));
         }
-        else
-        {
-            _changeHealthWork = StartCoroutine(ChangeHealth(currentHealth));
-        }
+        
+        _changeHealthWork = StartCoroutine(ChangeHealth(currentHealth));
+
     }
 
     private IEnumerator ChangeHealth(int currentHealth)

@@ -5,7 +5,7 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private int _maxHealth;
 
-    public event Action<int> HealthChange;
+    public event Action<int> HealthChanged;
     private int _currentHealth;
     public int MaxHealth => _maxHealth;
 
@@ -17,12 +17,12 @@ public class Player : MonoBehaviour
     public void TakeDamage(int damage)
     {
         _currentHealth = Mathf.Clamp(_currentHealth - damage, 0, _maxHealth);
-        HealthChange?.Invoke(_currentHealth);
+        HealthChanged?.Invoke(_currentHealth);
     }
 
     public void Heal(int heal)
     {
         _currentHealth = Mathf.Clamp(_currentHealth + heal, 0, _maxHealth);
-        HealthChange?.Invoke(_currentHealth);
+        HealthChanged?.Invoke(_currentHealth);
     }
 }
