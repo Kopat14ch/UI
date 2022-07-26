@@ -49,7 +49,6 @@ public class HealthBar : MonoBehaviour
         while (currentHealth >= _healthBarFilling.value + _inaccuracy && _heal)
         {
             _healthBarFilling.value = Mathf.MoveTowards(_healthBarFilling.value, currentHealth, _delay * Time.deltaTime);
-            Debug.Log(2);
             yield return null;
         }
     }
@@ -59,7 +58,6 @@ public class HealthBar : MonoBehaviour
         while (currentHealth <= _healthBarFilling.value - _inaccuracy && _heal == false)
         {
             _healthBarFilling.value = Mathf.MoveTowards(_healthBarFilling.value, currentHealth, _delay * Time.deltaTime);
-            Debug.Log(3);
             yield return null;
         }
     }
