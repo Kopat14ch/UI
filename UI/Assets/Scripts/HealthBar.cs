@@ -7,17 +7,14 @@ public class HealthBar : MonoBehaviour
     [SerializeField] private Slider _healthBarFilling;
     [SerializeField] private Player _player;
 
-    private bool _heal;
-    private int _delay;
-    private float _inaccuracy;
-    
+    private Coroutine _changeHealthWork;
+    private int _maxDelta;
+
     private void Start()
     {
-        _heal = false;
-        _healthBarFilling.maxValue = _player.CurrentHealth;
+        _healthBarFilling.maxValue = _player.MaxHealth;
         _healthBarFilling.value = _healthBarFilling.maxValue;
-        _delay = 3;
-        _inaccuracy = 0.00001f;
+        _maxDelta = 3;
     }
 
     private void OnEnable()
@@ -32,34 +29,26 @@ public class HealthBar : MonoBehaviour
 
     private void OnHealthChanged(int currentHealth)
     {
-        if (currentHealth >= _healthBarFilling.value)
+        if (_changeHealthWork != null)
         {
-            _heal = true;
-            StartCoroutine(AddHealth(currentHealth));
+            StopCoroutine(_changeHealthWork);
+            _changeHealthWork = StartCoroutine(ChangeHealth(currentHealth));
         }
-        else if (currentHealth <= _healthBarFilling.value)
+        else
         {
-            _heal = false;
-            StartCoroutine(TakeHealth(currentHealth));
+            _changeHealthWork = StartCoroutine(ChangeHealth(currentHealth));
         }
     }
 
-    private IEnumerator AddHealth(int currentHealth)
+    private IEnumerator ChangeHealth(int currentHealth)
     {
-        while (currentHealth >= _healthBarFilling.value + _inaccuracy && _heal)
+        while (_healthBarFilling.value != currentHealth)
         {
-            _healthBarFilling.value = Mathf.MoveTowards(_healthBarFilling.value, currentHealth, _delay * Time.deltaTime);
+            _healthBarFilling.value = Mathf.MoveTowards(_healthBarFilling.value, currentHealth, _maxDelta * Time.deltaTime);
+            Debug.Log(2);
             yield return null;
         }
     }
 
-    private IEnumerator TakeHealth(int currentHealth)
-    {
-        while (currentHealth <= _healthBarFilling.value - _inaccuracy && _heal == false)
-        {
-            _healthBarFilling.value = Mathf.MoveTowards(_healthBarFilling.value, currentHealth, _delay * Time.deltaTime);
-            yield return null;
-        }
-    }
 
 }
