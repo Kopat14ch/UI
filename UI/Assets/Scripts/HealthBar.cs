@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,23 +7,17 @@ public class HealthBar : MonoBehaviour
     [SerializeField] private Slider _healthBarFilling;
     [SerializeField] private Player _player;
 
+    private bool _heal;
     private int _delay;
-    private int _to;
+    private float _inaccuracy;
     
     private void Start()
     {
+        _heal = false;
         _healthBarFilling.maxValue = _player.CurrentHealth;
         _healthBarFilling.value = _healthBarFilling.maxValue;
-        _delay = 2;
-        _to = (int)_healthBarFilling.value;
-    }
-
-    private void FixedUpdate()
-    {
-        if (_healthBarFilling.value != _to)
-        {
-            _healthBarFilling.value = Mathf.Lerp(_healthBarFilling.value, _to, _delay * Time.deltaTime);
-        }
+        _delay = 3;
+        _inaccuracy = 0.00001f;
     }
 
     private void OnEnable()
@@ -35,9 +30,38 @@ public class HealthBar : MonoBehaviour
         _player.HealthChange -= OnHealthChanged;
     }
 
-    private void OnHealthChanged(int from, int to)
+    private void OnHealthChanged(int currentHealth)
     {
-        _to = to;
+        if (currentHealth >= _healthBarFilling.value)
+        {
+            _heal = true;
+            StartCoroutine(AddHealth(currentHealth));
+        }
+        else if (currentHealth <= _healthBarFilling.value)
+        {
+            _heal = false;
+            StartCoroutine(TakeHealth(currentHealth));
+        }
+    }
+
+    private IEnumerator AddHealth(int currentHealth)
+    {
+        while (currentHealth >= _healthBarFilling.value + _inaccuracy && _heal)
+        {
+            _healthBarFilling.value = Mathf.MoveTowards(_healthBarFilling.value, currentHealth, _delay * Time.deltaTime);
+            Debug.Log(2);
+            yield return null;
+        }
+    }
+
+    private IEnumerator TakeHealth(int currentHealth)
+    {
+        while (currentHealth <= _healthBarFilling.value - _inaccuracy && _heal == false)
+        {
+            _healthBarFilling.value = Mathf.MoveTowards(_healthBarFilling.value, currentHealth, _delay * Time.deltaTime);
+            Debug.Log(3);
+            yield return null;
+        }
     }
 
 }
